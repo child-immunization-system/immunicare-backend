@@ -1,4 +1,3 @@
-
 ### Backend Folder Structure
 
 Here is the folder structure for the backend of this child immunisation tracking system and how each component is interconnected:
@@ -67,7 +66,7 @@ graph TD
 Here's the text code showing the folder structure of the project:
 
 ```txt
-child-immunization-tracking-system/
+immunicare-backend/
 ├── backend/
 │   ├── Pipfile
 │   ├── Pipfile.lock
@@ -109,22 +108,6 @@ child-immunization-tracking-system/
 │                   ├── milestones.py
 │                   ├── schedules.py
 │                   └── reports.py
-├── frontend/
-│   ├── README.md
-│   └── src/
-│       ├── components/
-│       │   └── Navbar.js
-│       ├── pages/
-│       │   ├── Home.js
-│       │   ├── Profile.js
-│       │   ├── Immunizations.js
-│       │   ├── Milestones.js
-│       │   ├── Schedules.js
-│       │   └── Reports.js
-│       ├── services/
-│       ├── styles/
-│       ├── App.js
-│       └── index.js
 ```
 
 
