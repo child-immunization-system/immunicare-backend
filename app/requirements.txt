@@ -10,3 +10,5 @@ pymongo
 jose
 python-jose
 bcrypt
+bson
+apscheduler

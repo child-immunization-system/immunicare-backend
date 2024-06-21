@@ -17,6 +17,7 @@ jose = "*"
 python-jose = "*"
 bcrypt = "*"
 bson = "*"
+apscheduler = "*"
 
 [dev-packages]
 pytest = "*"

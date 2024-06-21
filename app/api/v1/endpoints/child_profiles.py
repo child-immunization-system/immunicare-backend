@@ -1,5 +1,6 @@
-from fastapi import APIRouter, Depends, HTTPException, Path
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Path
 from api.v1.endpoints.auth import get_current_user
+from core.utils import create_child_plan
 from db.repositories.user import UserRepository
 from db.models.user import User
 from db.dependency import get_database
@@ -9,7 +10,7 @@ from db.models.child_profile import ChildCreate, ChildProfile
 router = APIRouter()
 
 @router.post("/")
-async def create_child_profile(profile: ChildCreate , current_user=Depends(get_current_user), db=Depends(get_database)):
+async def create_child_profile(profile: ChildCreate, background_task: BackgroundTasks, current_user=Depends(get_current_user), db=Depends(get_database)):
     mother_id = profile.user_id if profile.user_id else current_user["_id"]
     current_user = User(**current_user)
     profile.user_id = profile.user_id if profile.user_id else current_user.id
@@ -23,6 +24,10 @@ async def create_child_profile(profile: ChildCreate , current_user=Depends(get_c
     
     current_user.children.extend(children_id)
     await add_child_to_mother(mother_id, current_user.children, db)
+
+    child = await repo.get_child_profile_by_info(profile)
+    background_task.add_task(create_child_plan, mother_id, child, db)
+
     return {"msg": "Child profile created successfully"}
 
 @router.get("/{user_id}")

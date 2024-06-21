@@ -1,4 +1,6 @@
 import os
+from typing import Optional
+from pydantic import DirectoryPath, EmailStr
 from pydantic_settings import BaseSettings
 from dotenv import load_dotenv
 
@@ -11,13 +13,6 @@ class Settings(BaseSettings):
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     
-    # MAIL_USERNAME: str
-    # MAIL_PASSWORD: str
-    # MAIL_FROM: str
-    # MAIL_PORT: int
-    # MAIL_SERVER: str
-    # MAIL_TLS: bool
-    # MAIL_SSL: bool
     # FRONTEND_URL: str
 
 settings = Settings()

@@ -8,3 +8,10 @@ class Milestone(BaseModel):
     milestone_name: str
     date_achieved: Optional[date] = None
     notes: Optional[str] = None
+
+
+class CreateMilestone(BaseModel):
+    child_id: str
+    milestone_name: str
+    date_achieved: Optional[date] = None
+    notes: Optional[str] = None

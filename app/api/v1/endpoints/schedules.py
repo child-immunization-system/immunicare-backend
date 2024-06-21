@@ -1,43 +1,24 @@
-from datetime import datetime, timedelta
+from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException, Query
-from pydantic import BaseModel
+from services.schedule_service import ScheduleService
 from db.models.child_profile import ChildProfile
 from db.dependency import get_database
 from db.repositories.child_profile import ChildProfileRepository
 from db.repositories.schedule import ScheduleRepository
-from db.models.schedule import Schedule
+from db.models.schedule import CreateSchedule
 
 router = APIRouter()
 
-immune_schedules = {
-    "birth": ["BCG", "OPV-O"],
-    "6_weeks": ["Penta-1", "OPV-1", "PCV-1", "Rota-1"],
-    "10_weeks": ["Penta-2", "OPV-2", "PCV-2", "Rota-2"],
-    "14_weeks": ["Penta-3", "OPV-3", "PCV-3", "IPV"],
-    "9_months": ["Measles-1", "Yellow Fever"],
-    "12_months": ["MenA"]
-}
-immune_schedule_days = {
-    "birth": 0,
-    "6_weeks": 6 * 7,
-    "10_weeks": 10 * 7,
-    "14_weeks": 14 * 7,
-    "9_months": 9 * 30,
-    "12_months": 12 * 30,
-}
 
-class vaccinationDates(BaseModel):
-    period: str
-    vaccination: list
-    due_date: datetime
+schedule_servcice = ScheduleService(ScheduleRepository(get_database))
 
 
 @router.post("/")
-async def create_schedule(schedule: Schedule, db=Depends(get_database)):
+async def create_schedule(schedule: CreateSchedule, db=Depends(get_database)):
     repo = ScheduleRepository(db)
     await repo.create_schedule(schedule)
     return {"msg": "Schedule created successfully"}
-
+#TODO: create a background function to create all milestones for a child after the schedule is created
 
 @router.get("/vaccine-schedule")
 async def get_schedules(child_id=Query(str), db=Depends(get_database)):
@@ -59,13 +40,6 @@ async def get_schedules(child_id=Query(str), db=Depends(get_database)):
     except ValueError:
         raise HTTPException(status_code=400, detail="Invalid date format, should be YYYY-MM-DD")
 
-    vaccinations_due = []
-    for period, days in immune_schedule_days.items():
-        schedule = vaccinationDates(
-            period=period,
-            vaccination=immune_schedules[period],
-            due_date= (birth_date_parsed + timedelta(days=days)).strftime("%Y-%m-%d")
-        )
-        vaccinations_due.append(schedule)
+    vaccinations_due = await schedule_servcice.create_child_schedule(birth_date_parsed)
 
     return vaccinations_due
